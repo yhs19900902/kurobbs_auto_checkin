@@ -32,21 +32,8 @@ jobs:
         id: run_script  # 给步骤命名，方便后续引用输出
         continue-on-error: true
         env:
-          TOKEN: ${{ secrets.TOKEN }}  # 从 GitHub Secrets 中获取 token
+          TOKEN: ${{ secrets.TOKEN }}
+          BARK_DEVICE_KEY: ${{ secrets.BARK_DEVICE_KEY }}
+          BARK_SERVER_URL: ${{ secrets.BARK_SERVER_URL }}
         run: |
-          output=$(python auto_checkin.py "$TOKEN")
-          extracted_output=$(echo "$output" | awk -F' - ' '{print $2}')  # 提取 - 之后的部分
-          echo "::set-output name=output::$extracted_output"  # 将提取后的输出保存到步骤的输出变量中
-
-      # 5. 使用 curl 推送消息到 iOS 手机（仅在 secrets 存在时执行）
-      - name: Send notification via Bark using curl
-        env:
-          BARK_DEVICE_KEY: ${{ secrets.BARK_DEVICE_KEY }}  # 将 secret 传递给 env
-          BARK_SERVER_URL: ${{ secrets.BARK_SERVER_URL }}  # 将 secret 传递给 env
-        if: env.BARK_DEVICE_KEY != '' && env.BARK_SERVER_URL != ''  # 检查 env 变量是否存在
-        run: |
-          # 构造 Bark 的 API URL
-          BARK_URL="$BARK_SERVER_URL/$BARK_DEVICE_KEY/库街区自动签到任务/${{ steps.run_script.outputs.result }}"
-          
-          # 使用 curl 发送请求
-          curl -s -o /dev/null -w "%{http_code}" "$BARK_URL"
+          python auto_checkin.py

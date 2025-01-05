@@ -1,4 +1,4 @@
-import argparse
+import os
 import sys
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional
@@ -6,6 +6,8 @@ from typing import Any, Callable, Dict, List, Optional
 import requests
 from loguru import logger
 from pydantic import BaseModel, Field
+
+from ext_bark import send_bark_notification
 
 
 class Response(BaseModel):
@@ -119,9 +121,13 @@ class KurobbsClient:
 
         self._log()
 
+    @property
+    def msg(self):
+        return ", ".join(self.result.values()) + "!"
+
     def _log(self):
         """Log the results and raise exceptions if any."""
-        if msg := ", ".join(self.result.values()):
+        if msg := self.msg:
             logger.info(msg)
         if self.exceptions:
             raise KurobbsClientException(", ".join(map(str, self.exceptions)))
@@ -136,18 +142,18 @@ def configure_logger(debug: bool = False):
 
 def main():
     """Main function to handle command-line arguments and start the sign-in process."""
-    parser = argparse.ArgumentParser(description="Sign in using a token.")
-    parser.add_argument("token", type=str, help="The token to use for signing in.")
-    parser.add_argument("--debug", action="store_true", help="Enable debug mode.")
-    args = parser.parse_args()
-
-    configure_logger(args.debug)
+    token = os.getenv("TOKEN")
+    debug = os.getenv("DEBUG", False)
+    configure_logger(debug=debug)
 
     try:
-        kurobbs = KurobbsClient(args.token)
+        kurobbs = KurobbsClient(token)
         kurobbs.start()
+        if kurobbs.msg:
+            send_bark_notification(kurobbs.msg)
     except KurobbsClientException as e:
         logger.error(str(e), exc_info=False)
+        send_bark_notification("签到任务失败!")
         sys.exit(1)
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")

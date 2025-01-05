@@ -46,11 +46,13 @@ Secrets 中。
 ## 注意事项
 
 - 确保 `TOKEN` 的安全性，不要将其直接写在代码中。
-- 如果需要修改定时任务的执行时间，可以编辑 [`.github/workflows/auto_sign.yaml`](.github/workflows/auto_checkin.yaml) 文件中的 `cron` 表达式。
+- 如果需要修改定时任务的执行时间，可以编辑 [`.github/workflows/auto_sign.yaml`](.github/workflows/auto_checkin.yaml) 文件中的
+  `cron` 表达式。
 
 ## 特别感谢
 
-本项目的签到脚本部分参考了 [TomyJan-API-Collection](https://github.com/TomyJan/Kuro-API-Collection) 的 API 实现。感谢TomyJan 的开源贡献
+本项目的签到脚本部分参考了 [TomyJan-API-Collection](https://github.com/TomyJan/Kuro-API-Collection) 的 API 实现。感谢TomyJan
+的开源贡献
 
 ## 贡献
 
