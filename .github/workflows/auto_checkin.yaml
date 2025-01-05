@@ -49,12 +49,11 @@ jobs:
           fi
 
       # 6. 使用 Barker 推送消息到 iOS 手机（仅在 secrets 存在时执行）
-      - uses: harryzcy/action-bark@v2.2.0
-        if: steps.check_bark_secrets.outputs.secrets_exist == 'true'  # 仅在 secrets 存在时执行
-        with:
-          status: ${{ job.status }}
-          title: "库街区自动签到任务"  # 自定义标题
-          body: ${{ steps.run_script.outputs.output }}  # 使用上一步 Python 脚本的输出作为 body
-          device_key: ${{ secrets.BARK_DEVICE_KEY }}
-          level: passive
-          bark_server_url: ${{ secrets.BARK_SERVER_URL }}
+      - name: Send notification via Bark using curl
+        if: ${{ secrets.BARK_DEVICE_KEY && secrets.BARK_SERVER_URL }}  # 仅在 secrets 存在时执行
+        run: |
+          # 构造 Bark 的 API URL
+          BARK_URL="${{ secrets.BARK_SERVER_URL }}/${{ secrets.BARK_DEVICE_KEY }}/库街区自动签到任务/${{ steps.run_script.outputs.output }}"
+
+          # 使用 curl 发送请求
+          curl -s -o /dev/null -w "%{http_code}" "$BARK_URL"
