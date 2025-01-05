@@ -30,6 +30,7 @@ jobs:
       # 4. 运行脚本并捕获输出
       - name: Run auto checkin script
         id: run_script  # 给步骤命名，方便后续引用输出
+        continue-on-error: true
         env:
           TOKEN: ${{ secrets.TOKEN }}  # 从 GitHub Secrets 中获取 token
         run: |
