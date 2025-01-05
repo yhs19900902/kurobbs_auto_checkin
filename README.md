@@ -1,6 +1,6 @@
-# 库街区Auto Sign Job
+# 库街区 Auto Sign Job
 
-这是一个自动签到任务的 GitHub Actions 工作流，旨在帮助用户通过定时任务自动执行库街区签到操作。通过使用 GitHub Actions，你可以在每天指定的时间自动运行签到脚本，而无需手动操作。
+你可以在每天指定的时间自动运行签到脚本(包含社区签到和奖励签到)，而无需手动操作。
 
 ## 如何使用
 
@@ -10,7 +10,8 @@
 
 ### 2. 设置 GitHub Secrets
 
-为了确保签到脚本能够正常运行，你需要将必要的敏感信息（[token 获取教程](https://blog.tomys.top/2023-07/kuro-token/)）存储在 GitHub Secrets 中。
+为了确保签到脚本能够正常运行，你需要将必要的敏感信息([token](https://blog.tomys.top/2023-07/kuro-token/))存储在 GitHub
+Secrets 中。
 
 1. 进入你 Fork 后的仓库页面。
 2. 点击 `Settings` 选项卡。
@@ -21,7 +22,7 @@
 
 ### 3. 修改脚本（可选）
 
-如果你需要修改签到脚本的逻辑，可以编辑 `auto_sign.py` 文件。确保脚本能够正确处理传入的 `TOKEN` 参数。
+如果你需要修改签到脚本的逻辑，可以编辑 [`auto_checkin.py`](auto_checkin.py) 文件。
 
 ### 4. 触发工作流
 
@@ -40,20 +41,17 @@
 
 ### 5. 查看运行结果
 
-每次工作流运行后，你可以在 `Actions` 选项卡中查看运行结果。如果签到成功，你应该能够看到相应的日志输出。
-
-## 依赖
-
-- Python 3.10
-- 依赖库（如果有）可以在 `requirements.txt` 中列出，工作流会自动安装。
+每次工作流运行后，你可以在 `Actions` 选项卡中查看运行结果。如果签到成功，你应该能够看到相应的日志输出。签到失败则会报错。
 
 ## 注意事项
 
 - 确保 `TOKEN` 的安全性，不要将其直接写在代码中。
-- 如果需要修改定时任务的执行时间，可以编辑 `.github/workflows/auto_sign.yml` 文件中的 `cron` 表达式。
+- 如果需要修改定时任务的执行时间，可以编辑 [`.github/workflows/auto_sign.yaml`](.github/workflows/auto_checkin.yaml) 文件中的 `cron` 表达式。
 
 ## 特别感谢
-本项目的签到脚本部分参考了 [TomyJan-API-Collection](https://github.com/TomyJan/Kuro-API-Collection) 的 API 实现。感谢 TomyJan 的开源贡献
+
+本项目的签到脚本部分参考了 [TomyJan-API-Collection](https://github.com/TomyJan/Kuro-API-Collection) 的 API 实现。感谢TomyJan 的开源贡献
 
 ## 贡献
+
 如果你有任何改进建议或发现问题，欢迎提交 Issue 或 Pull Request.
