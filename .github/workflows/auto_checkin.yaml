@@ -27,9 +27,33 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt  # 如果有依赖文件
 
-      # 4. 运行脚本
+      # 4. 运行脚本并捕获输出
       - name: Run auto checkin script
+        id: run_script  # 给步骤命名，方便后续引用输出
         env:
           TOKEN: ${{ secrets.TOKEN }}  # 从 GitHub Secrets 中获取 token
         run: |
-          python auto_checkin.py "$TOKEN"
+          output=$(python auto_checkin.py "$TOKEN")
+          extracted_output=$(echo "$output" | awk -F' - ' '{print $2}')  # 提取 - 之后的部分
+          echo "::set-output name=output::$extracted_output"  # 将提取后的输出保存到步骤的输出变量中
+
+      # 5. 检查 BARK_DEVICE_KEY 和 BARK_SERVER_URL 是否存在
+      - name: Check if Bark secrets exist
+        id: check_bark_secrets
+        run: |
+          if [ -n "${{ secrets.BARK_DEVICE_KEY }}" ] && [ -n "${{ secrets.BARK_SERVER_URL }}" ]; then
+            echo "::set-output name=secrets_exist::true"
+          else
+            echo "::set-output name=secrets_exist::false"
+          fi
+
+      # 6. 使用 Barker 推送消息到 iOS 手机（仅在 secrets 存在时执行）
+      - uses: harryzcy/action-bark@v1
+        if: steps.check_bark_secrets.outputs.secrets_exist == 'true'  # 仅在 secrets 存在时执行
+        with:
+          status: ${{ job.status }}
+          title: "库街区自动签到任务"  # 自定义标题
+          body: ${{ steps.run_script.outputs.output }}  # 使用上一步 Python 脚本的输出作为 body
+          device_key: ${{ secrets.BARK_DEVICE_KEY }}
+          level: passive
+          bark_server_url: ${{ secrets.BARK_SERVER_URL }}
