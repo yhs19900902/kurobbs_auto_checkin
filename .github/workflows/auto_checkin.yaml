@@ -48,7 +48,7 @@ jobs:
           fi
 
       # 6. 使用 Barker 推送消息到 iOS 手机（仅在 secrets 存在时执行）
-      - uses: harryzcy/action-bark@v1
+      - uses: harryzcy/action-bark@v2.2.0
         if: steps.check_bark_secrets.outputs.secrets_exist == 'true'  # 仅在 secrets 存在时执行
         with:
           status: ${{ job.status }}
