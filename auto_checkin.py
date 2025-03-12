@@ -1,6 +1,7 @@
 import os
 import sys
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from typing import Any, Callable, Dict, List, Optional
 
 import requests
@@ -68,13 +69,15 @@ class KurobbsClient:
         """Perform the check-in operation."""
         user_game_list = self.get_user_game_list(3)
 
-        date = datetime.now().month
+        # 获取北京时间（UTC+8）
+        beijing_tz = ZoneInfo('Asia/Shanghai')
+        beijing_time = datetime.now(beijing_tz)
         data = {
             "gameId": user_game_list[0].get("gameId", 2),
             "serverId": user_game_list[0].get("serverId", None),
             "roleId": user_game_list[0].get("roleId", 0),
             "userId": user_game_list[0].get("userId", 0),
-            "reqMonth": f"{date:02d}",
+            "reqMonth": f"{beijing_time.month:02d}",
         }
         return self.make_request(self.SIGN_URL, data)
 
