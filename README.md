@@ -43,6 +43,17 @@ Secrets 中。
 
 每次工作流运行后，你可以在 `Actions` 选项卡中查看运行结果。如果签到成功，你应该能够看到相应的日志输出。签到失败则会报错。
 
+### 6. 第三方结果推送（可选）
+
+将每日运行结果推送到其他APP当中。
+
+#### Server酱3
+
+1. 前往[Server酱3官网](https://sc3.ft07.com/)，微信扫码登入。
+2. SendKey-AppKey管理-添加新的AppKey。
+3. 将获得的AppKey写入Github Secrets，`Name`字段为`SERVER3_SEND_KEY`。具体可参考本文的`2. 设置 GitHub Secrets`部分。
+4. 下载[APP](https://sc3.ft07.com/client)并登入。
+
 ## 注意事项
 
 - 确保 `TOKEN` 的安全性，不要将其直接写在代码中。

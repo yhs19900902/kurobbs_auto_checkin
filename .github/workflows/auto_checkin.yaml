@@ -33,7 +33,9 @@ jobs:
         continue-on-error: true
         env:
           TOKEN: ${{ secrets.TOKEN }}
+          DEBUG: ${{ secrets.DEBUG }}
           BARK_DEVICE_KEY: ${{ secrets.BARK_DEVICE_KEY }}
           BARK_SERVER_URL: ${{ secrets.BARK_SERVER_URL }}
+          SERVER3_SEND_KEY: ${{ secrets.SERVER3_SEND_KEY }} # ServerChan3
         run: |
           python auto_checkin.py
