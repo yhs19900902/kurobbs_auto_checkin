@@ -1,37 +1,50 @@
-import os
 
 import requests
 from loguru import logger
 from serverchan_sdk import sc_send
 
-
-def send_notification(message):
-    title = "库街区自动签到任务"
-    send_bark_notification(title, message)
-    send_server3_notification(title, message)
+from settings import Settings
 
 
-def send_bark_notification(title, message):
-    """Send a notification via Bark."""
-    bark_device_key = os.getenv("BARK_DEVICE_KEY")
-    bark_server_url = os.getenv("BARK_SERVER_URL")
+class NotificationService:
+    """Aggregate notification channels for GitHub Actions."""
 
-    if not bark_device_key or not bark_server_url:
-        logger.debug("Bark secrets are not set. Skipping notification.")
-        return
+    def __init__(self, settings: Settings):
+        self.settings = settings
 
-    # 构造 Bark API URL
-    url = f"{bark_server_url}/{bark_device_key}/{title}/{message}"
-    try:
-        requests.get(url)
-    except Exception:
-        pass
+    def send(self, message: str):
+        title = "库街区自动签到任务"
+        delivered = [
+            self._send_bark(title, message),
+            self._send_server3(title, message),
+        ]
+        if not any(delivered):
+            logger.debug("No notification channel configured; skipped sending result.")
 
+    def _send_bark(self, title: str, message: str) -> bool:
+        if not self.settings.bark_device_key or not self.settings.bark_server_url:
+            return False
 
-def send_server3_notification(title, message):
-    server3_send_key = os.getenv("SERVER3_SEND_KEY")
-    if server3_send_key:
-        response = sc_send(server3_send_key, title, message, {"tags": "Github Action|库街区"})
-        logger.debug(response)
-    else:
-        logger.debug("ServerChan3 send key not exists.")
+        url = f"{self.settings.bark_server_url}/{self.settings.bark_device_key}/{title}/{message}"
+        try:
+            response = requests.get(url, timeout=10)
+            logger.debug("Sent Bark notification, status={}", response.status_code)
+        except requests.RequestException as exc:
+            logger.warning("Failed to push Bark notification: {}", exc)
+        return True
+
+    def _send_server3(self, title: str, message: str) -> bool:
+        if not self.settings.server3_send_key:
+            return False
+
+        try:
+            response = sc_send(
+                self.settings.server3_send_key,
+                title,
+                message,
+                {"tags": "Github Action|库街区"},
+            )
+            logger.debug("Sent ServerChan3 notification: {}", response)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Failed to push ServerChan3 notification: {}", exc)
+        return True

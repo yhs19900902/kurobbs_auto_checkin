@@ -59,6 +59,7 @@ Secrets 中。
 - 确保 `TOKEN` 的安全性，不要将其直接写在代码中。
 - 如果需要修改定时任务的执行时间，可以编辑 [`.github/workflows/auto_sign.yaml`](.github/workflows/auto_checkin.yaml) 文件中的
   `cron` 表达式。
+- 如需查看更详细的排查日志，可以在 Secrets 中添加 `DEBUG=true`，日志会自动对 TOKEN、Bark、Server酱等敏感值进行脱敏。
 
 ## 特别感谢
 
